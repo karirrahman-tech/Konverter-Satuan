@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konverter - Aplikasi Konversi Unit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen Styles */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .splash-screen.fade-out {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(79, 172, 254, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .splash-logo i {
+            font-size: 60px;
+            color: #ffffff;
+        }
+
+        .splash-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .splash-subtitle {
+            font-size: 16px;
+            color: #a0a0a0;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            border-radius: 2px;
+            width: 0%;
+            animation: loading 2s ease-out forwards;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.5);
+        }
+
+        .loading-text {
+            font-size: 14px;
+            color: #a0a0a0;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .loading-dots {
+            display: inline-block;
+            width: 20px;
+            text-align: left;
+        }
+
+        /* Main App Styles (hidden initially) */
+        .main-app {
+            opacity: 0;
+            transition: opacity 0.8s ease-in;
+        }
+
+        .main-app.show {
+            opacity: 1;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .time {
+            font-weight: 500;
+            font-size: 16px;
+        }
+
+        .status-icons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-icons i {
+            font-size: 16px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 100%);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(79, 172, 254, 0.3);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 25px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px; /* Jarak antar kategori */
+        }
+
+        /* Category Styles */
+        .category {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            padding-left: 15px;
+            border-left: 3px solid #4facfe;
+        }
+
+        /* Grid Layout */
+        .converter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 20px;
+            padding: 10px 0;
+        }
+
+        .converter-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 25px 15px;
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .converter-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .converter-item:hover::before {
+            opacity: 1;
+        }
+
+        .converter-item:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(79, 172, 254, 0.3);
+        }
+
+        .converter-item i {
+            font-size: 32px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            z-index: 1;
+        }
+
+        .converter-item span {
+            font-size: 14px;
+            text-align: center;
+            z-index: 1;
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header h2 {
+            font-size: 22px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .close-btn:hover {
+            transform: rotate(90deg);
+        }
+
+        .converter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-size: 14px;
+            color: #a0a0a0;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .input-group textarea {
+            resize: vertical;
+        }
+
+        .input-group select option {
+            background: #16213e;
+            color: #ffffff;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: rgba(79, 172, 254, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.2);
+        }
+
+        .swap-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            align-self: center;
+            margin: 5px 0;
+        }
+
+        .swap-btn:hover {
+            background: rgba(79, 172, 254, 0.2);
+            transform: rotate(180deg);
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-value {
+            font-size: 28px;
+            font-weight: bold;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            word-break: break-all;
+        }
+        
+        .text-output {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 80px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            text-align: left;
+        }
+
+        .convert-btn {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+        
+        .convert-btn.stop {
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 18px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.4);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 2000;
+            font-weight: 500;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Special converters styles */
+        .color-preview {
+            width: 100%;
+            height: 80px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sound-player {
+            width: 100%;
+            margin: 15px 0;
+        }
+
+        .coordinate-map {
+            width: 100%;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Hidden form for mode switching */
+        .hidden-form {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .converter-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+            }
+            
+            .converter-item {
+                padding: 20px 10px;
+            }
+            
+            .converter-item i {
+                font-size: 28px;
+            }
+            
+            .converter-item span {
+                font-size: 12px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .splash-title {
+                font-size: 28px;
+            }
+
+            .splash-logo {
+                width: 100px;
+                height: 100px;
+            }
+
+            .splash-logo i {
+                font-size: 50px;
+            }
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes loading {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        .loading {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splash-screen">
+        <div class="splash-logo">
+            <i class="fas fa-exchange-alt"></i>
+        </div>
+        <h1 class="splash-title">Konverter Satuan</h1>
+        <p class="splash-subtitle">Aplikasi Konversi Unit Profesional</p>
+        <div class="loading-container">
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="loading-text">
+                Memuat aplikasi<span class="loading-dots">...</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="main-app" id="main-app">
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="time" id="current-time">09:41</div>
+            <div class="status-icons">
+                <i class="fas fa-signal"></i>
+                <i class="fas fa-wifi"></i>
+                <i class="fas fa-battery-three-quarters"></i>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <div class="header">
+            <h1>Konverter Satuan</h1>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Kategori: Ukuran & Dimensi -->
+            <div class="category">
+                <h3 class="category-title">Ukuran & Dimensi</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="length">
+                        <i class="fas fa-ruler"></i>
+                        <span>Panjang</span>
+                    </div>
+                    <div class="converter-item" data-type="area">
+                        <i class="fas fa-vector-square"></i>
+                        <span>Luas</span>
+                    </div>
+                    <div class="converter-item" data-type="volume">
+                        <i class="fas fa-flask"></i>
+                        <span>Volume</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Massa & Gaya -->
+            <div class="category">
+                <h3 class="category-title">Massa & Gaya</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="mass">
+                        <i class="fas fa-weight"></i>
+                        <span>Massa / Berat</span>
+                    </div>
+                    <div class="converter-item" data-type="force">
+                        <i class="fas fa-arrows-alt"></i>
+                        <span>Gaya / Beban</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Waktu & Gerak -->
+            <div class="category">
+                <h3 class="category-title">Waktu & Gerak</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="time">
+                        <i class="fas fa-clock"></i>
+                        <span>Waktu</span>
+                    </div>
+                    <div class="converter-item" data-type="speed">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Kecepatan</span>
+                    </div>
+                    <div class="converter-item" data-type="acceleration">
+                        <i class="fas fa-rocket"></i>
+                        <span>Percepatan</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Fisika & Energi -->
+            <div class="category">
+                <h3 class="category-title">Fisika & Energi</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="temperature">
+                        <i class="fas fa-thermometer-half"></i>
+                        <span>Suhu</span>
+                    </div>
+                    <div class="converter-item" data-type="pressure">
+                        <i class="fas fa-compress-arrows-alt"></i>
+                        <span>Tekanan</span>
+                    </div>
+                    <div class="converter-item" data-type="energy">
+                        <i class="fas fa-bolt"></i>
+                        <span>Energi</span>
+                    </div>
+                    <div class="converter-item" data-type="power">
+                        <i class="fas fa-plug"></i>
+                        <span>Daya</span>
+                    </div>
+                    <div class="converter-item" data-type="viscosity">
+                        <i class="fas fa-oil-can"></i>
+                        <span>Viskositas</span>
+                    </div>
+                    <div class="converter-item" data-type="illuminance">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Pencahayaan</span>
+                    </div>
+                    <div class="converter-item" data-type="frequency">
+                        <i class="fas fa-wave-square"></i>
+                        <span>Frekuensi</span>
+                    </div>
+                    <div class="converter-item" data-type="material">
+                        <i class="fas fa-cube"></i>
+                        <span>Satuan Material</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Listrik -->
+            <div class="category">
+                <h3 class="category-title">Listrik</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="electric-current">
+                        <i class="fas fa-plug"></i>
+                        <span>Arus Listrik</span>
+                    </div>
+                    <div class="converter-item" data-type="voltage">
+                        <i class="fas fa-bolt"></i>
+                        <span>Tegangan</span>
+                    </div>
+                    <div class="converter-item" data-type="resistance">
+                        <i class="fas fa-project-diagram"></i>
+                        <span>Resistansi</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Data Digital -->
+            <div class="category">
+                <h3 class="category-title">Data Digital</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="data">
+                        <i class="fas fa-database"></i>
+                        <span>Data (digital)</span>
+                    </div>
+                    <div class="converter-item" data-type="transfer-speed">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Kecepatan Transfer</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Geometri & Posisi -->
+            <div class="category">
+                <h3 class="category-title">Geometri & Posisi</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="angle">
+                        <i class="fas fa-angle-double-up"></i>
+                        <span>Sudut</span>
+                    </div>
+                    <div class="converter-item" data-type="slope">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Kemiringan</span>
+                    </div>
+                    <div class="converter-item" data-type="coordinate">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Koordinat</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Keuangan & Teknis -->
+            <div class="category">
+                <h3 class="category-title">Keuangan & Teknis</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="tax-interest">
+                        <i class="fas fa-percentage"></i>
+                        <span>Pajak / Bunga</span>
+                    </div>
+                    <div class="converter-item" data-type="scale">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        <span>Skala Gambar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kategori: Media & Kreatif -->
+            <div class="category">
+                <h3 class="category-title">Media & Kreatif</h3>
+                <div class="converter-grid">
+                    <div class="converter-item" data-type="color">
+                        <i class="fas fa-palette"></i>
+                        <span>Warna</span>
+                    </div>
+                    <div class="converter-item" data-type="text">
+                        <i class="fas fa-font"></i>
+                        <span>Teks</span>
+                    </div>
+                    <div class="converter-item" data-type="sound">
+                        <i class="fas fa-volume-up"></i>
+                        <span>Sound Generator</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="converter-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Konverter</h2>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <div class="converter-form" id="converter-form">
+                <!-- Form content will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <span id="notification-text">Konversi berhasil!</span>
+    </div>
+
+    <script>
+        // Splash Screen Management
+        window.addEventListener('load', () => {
+            // Update loading dots animation
+            const loadingDots = document.querySelector('.loading-dots');
+            let dotCount = 0;
+            const dotInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                loadingDots.textContent = '.'.repeat(dotCount || 1);
+            }, 500);
+
+            // Hide splash screen after loading
+            setTimeout(() => {
+                clearInterval(dotInterval);
+                const splashScreen = document.getElementById('splash-screen');
+                const mainApp = document.getElementById('main-app');
+                
+                // Add fade out animation to splash screen
+                splashScreen.classList.add('fade-out');
+                
+                // Show main app after a short delay
+                setTimeout(() => {
+                    splashScreen.style.display = 'none';
+                    mainApp.classList.add('show');
+                }, 800);
+            }, 2500); // 2.5 seconds loading time
+        });
+
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+        }
+        
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Struktur konfigurasi konverter yang telah diperbarui dan dilengkapi
+        const converterConfigs = {
+            // PERBAIKAN: Kategori Panjang menggunakan satuan SI yang benar
+            length: {
+                title: 'Panjang',
+                units: {
+                    'km': 'Kilometer',
+                    'hm': 'Hektometer',
+                    'dam': 'Dekameter',
+                    'm': 'Meter',
+                    'dm': 'Desimeter',
+                    'cm': 'Sentimeter',
+                    'mm': 'Milimeter'
+                },
+                // Basis: Meter
+                conversionRates: {
+                    'km': 0.001,
+                    'hm': 0.01,
+                    'dam': 0.1,
+                    'm': 1,
+                    'dm': 10,
+                    'cm': 100,
+                    'mm': 1000
+                }
+            },
+            // PERBAIKAN: Kategori Luas menggunakan satuan SI yang benar
+            area: {
+                title: 'Luas',
+                units: {
+                    'km²': 'Kilometer Persegi',
+                    'hm²': 'Hektometer Persegi',
+                    'dam²': 'Dekameter Persegi',
+                    'm²': 'Meter Persegi',
+                    'dm²': 'Desimeter Persegi',
+                    'cm²': 'Sentimeter Persegi',
+                    'mm²': 'Milimeter Persegi',
+                    'ha': 'Hektare',
+                    'a': 'Are'
+                },
+                // Basis: Meter Persegi
+                conversionRates: {
+                    'km²': 0.000001,
+                    'hm²': 0.0001,
+                    'dam²': 0.01,
+                    'm²': 1,
+                    'dm²': 100,
+                    'cm²': 10000,
+                    'mm²': 1000000,
+                    'ha': 0.0001,
+                    'a': 0.01
+                }
+            },
+            // PERBAIKAN: Kategori Volume menggunakan satuan SI yang benar
+            volume: {
+                title: 'Volume',
+                units: {
+                    'km³': 'Kilometer Kubik',
+                    'hm³': 'Hektometer Kubik',
+                    'dam³': 'Dekameter Kubik',
+                    'm³': 'Meter Kubik',
+                    'dm³': 'Desimeter Kubik',
+                    'cm³': 'Sentimeter Kubik',
+                    'mm³': 'Milimeter Kubik',
+                    'L': 'Liter',
+                    'mL': 'Mililiter'
+                },
+                // Basis: Meter Kubik
+                conversionRates: {
+                    'km³': 0.000000001,
+                    'hm³': 0.000001,
+                    'dam³': 0.001,
+                    'm³': 1,
+                    'dm³': 1000,
+                    'cm³': 1000000,
+                    'mm³': 1000000000,
+                    'L': 1000,
+                    'mL': 1000000
+                }
+            },
+            mass: {
+                title: 'Massa / Berat',
+                units: {
+                    't': 'Ton',
+                    'q': 'Kuintal',
+                    'kg': 'Kilogram',
+                    'g': 'Gram',
+                    'mg': 'Miligram',
+                    'µg': 'Mikrogram',
+                    'lb': 'Pon (Pound)',
+                    'oz': 'Ons (Internasional)',
+                    'ons': 'Ons (Indonesia)',
+                    'slug': 'Slug'
+                },
+                // Basis: Kilogram (kg)
+                conversionRates: {
+                    't': 0.001,        // 1 kg = 0.001 Ton
+                    'q': 0.01,         // 1 kg = 0.01 Kuintal
+                    'kg': 1,           // 1 kg = 1 Kilogram
+                    'g': 1000,         // 1 kg = 1000 Gram
+                    'mg': 1000000,     // 1 kg = 1.000.000 Miligram
+                    'µg': 1000000000,  // 1 kg = 1.000.000.000 Mikrogram
+                    'lb': 2.20462262185, // 1 kg ≈ 2.20462 Pon
+                    'oz': 35.2739619496, // 1 kg ≈ 35.27396 Ons (Internasional)
+                    'ons': 10,         // 1 kg = 10 Ons (Indonesia, 100g)
+                    'slug': 0.0685218   // 1 kg ≈ 0.0685218 Slug
+                }
+            },
+            time: {
+                title: 'Waktu',
+                units: { 'y': 'Tahun', 'mo': 'Bulan', 'w': 'Minggu', 'd': 'Hari', 'h': 'Jam', 'min': 'Menit', 's': 'Detik', 'ms': 'Milidetik', 'µs': 'Mikrodetik', 'ns': 'Nanodetik' },
+                conversionRates: { 'y': 3.154e7, 'mo': 2.628e6, 'w': 604800, 'd': 86400, 'h': 3600, 'min': 60, 's': 1, 'ms': 1000, 'µs': 1000000, 'ns': 1000000000 }
+            },
+            speed: {
+                title: 'Kecepatan',
+                units: {
+                    'km/s': 'Kilometer per Detik',
+                    'km/h': 'Kilometer per Jam',
+                    'm/s': 'Meter per Detik',
+                    'm/h': 'Meter per Jam',
+                    'cm/s': 'Sentimeter per Detik',
+                    'cm/h': 'Sentimeter per Jam',
+                    'mm/s': 'Milimeter per Detik',
+                    'mm/h': 'Milimeter per Jam',
+                    'mph': 'Mil per Jam',
+                    'knot': 'Knot',
+                    'ft/s': 'Kaki per Detik',
+                    'ft/h': 'Kaki per Jam',
+                    'Mach': 'Mach'
+                },
+                // Basis: Meter per Detik (m/s)
+                conversionRates: {
+                    'km/s': 0.001,        // 1 m/s = 0.001 km/s
+                    'km/h': 3.6,          // 1 m/s = 3.6 km/h
+                    'm/s': 1,             // 1 m/s = 1 m/s
+                    'm/h': 3600,          // 1 m/s = 3600 m/h
+                    'cm/s': 100,          // 1 m/s = 100 cm/s
+                    'cm/h': 360000,       // 1 m/s = 360000 cm/h
+                    'mm/s': 1000,         // 1 m/s = 1000 mm/s
+                    'mm/h': 3600000,      // 1 m/s = 3600000 mm/h
+                    'mph': 2.23693629205, // 1 m/s ≈ 2.23694 mph
+                    'knot': 1.94384449244, // 1 m/s ≈ 1.94384 knot
+                    'ft/s': 3.28083989501, // 1 m/s ≈ 3.28084 ft/s
+                    'ft/h': 11811.023622, // 1 m/s ≈ 11811.02 ft/h
+                    'Mach': 0.00291545    // 1 m/s ≈ 0.00291545 Mach
+                }
+            },
+            temperature: {
+                title: 'Suhu',
+                units: {
+                    'C': 'Celsius (°C)',
+                    'F': 'Fahrenheit (°F)',
+                    'K': 'Kelvin (K)',
+                    'Re': 'Réamur (°Re)',
+                    'Ra': 'Rankine (°Ra)'
+                },
+                specialConversion: true
+            },
+            pressure: {
+                title: 'Tekanan',
+                units: { 'Pa': 'Pascal', 'kPa': 'Kilopascal', 'bar': 'Bar', 'atm': 'Atmosfer', 'psi': 'PSI', 'Torr': 'Torr', 'mmHg': 'mmHg', 'inH2O': 'Inci Air' },
+                conversionRates: { 'Pa': 1, 'kPa': 0.001, 'bar': 0.00001, 'atm': 0.00000986923, 'psi': 0.000145038, 'Torr': 0.00750062, 'mmHg': 0.00750062, 'inH2O': 0.00401463 }
+            },
+            energy: {
+                title: 'Energi',
+                units: { 'J': 'Joule', 'kJ': 'Kilojoule', 'cal': 'Kalori', 'kcal': 'Kilokalori', 'Wh': 'Watt-jam', 'kWh': 'Kilowatt-jam', 'BTU': 'BTU', 'eV': 'Elektronvolt', 'ft-lb': 'Kaki-Pound' },
+                conversionRates: { 'J': 1, 'kJ': 0.001, 'cal': 0.239006, 'kcal': 0.000239006, 'Wh': 0.000277778, 'kWh': 0.000000277778, 'BTU': 0.000947817, 'eV': 6.242e18, 'ft-lb': 0.737562 }
+            },
+            power: {
+                title: 'Daya',
+                units: { 'W': 'Watt', 'kW': 'Kilowatt', 'MW': 'Megawatt', 'hp': 'Tenaga Kuda', 'BTU/h': 'BTU per Jam' },
+                conversionRates: { 'W': 1, 'kW': 0.001, 'MW': 0.000001, 'hp': 0.00134102, 'BTU/h': 3.41214 }
+            },
+            data: {
+                title: 'Data (digital)',
+                units: { 'bit': 'Bit', 'B': 'Byte', 'KB': 'Kilobyte', 'MB': 'Megabyte', 'GB': 'Gigabyte', 'TB': 'Terabyte', 'PB': 'Petabyte' },
+                conversionRates: { 'bit': 8, 'B': 1, 'KB': 0.0009765625, 'MB': 0.000000953674, 'GB': 0.000000000931323, 'TB': 0.000000000000909495, 'PB': 0.000000000000000888178 }
+            },
+            'transfer-speed': {
+                title: 'Kecepatan Transfer',
+                units: { 'bps': 'bit per detik', 'B/s': 'Byte per detik', 'Kbps': 'Kilobit per detik', 'KB/s': 'Kilobyte per detik', 'Mbps': 'Megabit per detik', 'MB/s': 'Megabyte per detik', 'Gbps': 'Gigabit per detik', 'GB/s': 'Gigabyte per detik' },
+                conversionRates: { 'bps': 1, 'B/s': 0.125, 'Kbps': 0.001, 'KB/s': 0.000125, 'Mbps': 0.000001, 'MB/s': 0.000000125, 'Gbps': 0.000000001, 'GB/s': 0.000000000125 }
+            },
+            'tax-interest': { title: 'Pajak / Bunga', specialForm: true },
+            scale: {
+                title: 'Skala Gambar',
+                units: { '1:1': 'Ukuran Asli', '1:10': '1:10', '1:20': '1:20', '1:50': '1:50', '1:100': '1:100', '1:200': '1:200', '1:500': '1:500', '1:1000': '1:1000', '10:1': '10:1', '5:1': '5:1', '2:1': '2:1' },
+                specialForm: true
+            },
+            force: {
+                title: 'Gaya / Beban',
+                units: { 'N': 'Newton', 'kN': 'Kilonewton', 'kgf': 'Kilogram-force', 'lbf': 'Pound-force', 'dyn': 'Dyne' },
+                conversionRates: { 'N': 1, 'kN': 0.001, 'kgf': 0.101972, 'lbf': 0.224809, 'dyn': 100000 }
+            },
+            slope: {
+                title: 'Kemiringan',
+                units: { 'deg': 'Derajat', '%': 'Persen', 'rad': 'Radian', 'ratio': 'Rasio (rise/run)' },
+                specialConversion: true
+            },
+            material: {
+                title: 'Satuan Material',
+                units: { 'kg/m³': 'kg/m³', 'g/cm³': 'g/cm³', 'lb/ft³': 'lb/ft³' },
+                conversionRates: { 'kg/m³': 1, 'g/cm³': 0.001, 'lb/ft³': 0.062428 }
+            },
+            color: { title: 'Warna', specialForm: true },
+            text: { title: 'Teks', specialForm: true },
+            sound: { title: 'Sound Generator', specialForm: true },
+            coordinate: { title: 'Koordinat', specialForm: true },
+            // Kategori Baru
+            acceleration: {
+                title: 'Percepatan',
+                units: { 'm/s²': 'Meter per Detik Kuadrat', 'g': 'Gaya-g', 'ft/s²': 'Kaki per Detik Kuadrat' },
+                conversionRates: { 'm/s²': 1, 'g': 0.101972, 'ft/s²': 3.28084 }
+            },
+            angle: {
+                title: 'Sudut',
+                units: { 'deg': 'Derajat', 'rad': 'Radian', 'grad': 'Gradian', 'turn': 'Putaran' },
+                specialConversion: true
+            },
+            'electric-current': {
+                title: 'Arus Listrik',
+                units: { 'A': 'Ampere', 'mA': 'Miliampere', 'µA': 'Mikroampere', 'kA': 'Kiloampere' },
+                conversionRates: { 'A': 1, 'mA': 1000, 'µA': 1000000, 'kA': 0.001 }
+            },
+            voltage: {
+                title: 'Tegangan',
+                units: { 'V': 'Volt', 'mV': 'Milivolt', 'µV': 'Mikrovolt', 'kV': 'Kilovolt' },
+                conversionRates: { 'V': 1, 'mV': 1000, 'µV': 1000000, 'kV': 0.001 }
+            },
+            resistance: {
+                title: 'Resistansi',
+                units: { 'Ω': 'Ohm', 'mΩ': 'Miliohm', 'kΩ': 'Kiloohm', 'MΩ': 'Megaohm' },
+                conversionRates: { 'Ω': 1, 'mΩ': 1000, 'kΩ': 0.001, 'MΩ': 0.000001 }
+            },
+            viscosity: {
+                title: 'Viskositas',
+                units: { 'Pa·s': 'Pascal-detik', 'mPa·s': 'MiliPascal-detik', 'cP': 'Centipoise', 'St': 'Stokes' },
+                conversionRates: { 'Pa·s': 1, 'mPa·s': 1000, 'cP': 1000, 'St': 10000 }
+            },
+            illuminance: {
+                title: 'Pencahayaan',
+                units: { 'lx': 'Lux', 'fc': 'Foot-candle', 'ph': 'Phot' },
+                conversionRates: { 'lx': 1, 'fc': 0.092903, 'ph': 0.0001 }
+            },
+            frequency: {
+                title: 'Frekuensi',
+                units: { 'Hz': 'Hertz', 'kHz': 'Kilohertz', 'MHz': 'Megahertz', 'GHz': 'Gigahertz', 'rpm': 'Rotasi per Menit' },
+                conversionRates: { 'Hz': 1, 'kHz': 0.001, 'MHz': 0.000001, 'GHz': 0.000000001, 'rpm': 60 }
+            }
+        };
+
+        // Modal elements
+        const modal = document.getElementById('converter-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const converterForm = document.getElementById('converter-form');
+        const closeModalBtn = document.getElementById('close-modal');
+        const notification = document.getElementById('notification');
+        const notificationText = document.getElementById('notification-text');
+
+        function showNotification(message) {
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => { notification.classList.remove('show'); }, 3000);
+        }
+
+        closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
+        window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+
+        document.querySelectorAll('.converter-item').forEach(item => {
+            item.addEventListener('click', () => { openConverter(item.getAttribute('data-type')); });
+        });
+
+        function openConverter(type) {
+            const config = converterConfigs[type];
+            modalTitle.textContent = config.title;
+            let formHTML = '';
+            
+            if (config.specialForm) {
+                switch(type) {
+                    case 'text':
+                        formHTML = `
+                            <div class="input-group">
+                                <label for="text-input">Teks</label>
+                                <textarea id="text-input" rows="4" placeholder="Masukkan teks"></textarea>
+                            </div>
+                            <div class="input-group">
+                                <label for="text-conversion">Konversi</label>
+                                <select id="text-conversion">
+                                    <option value="uppercase">HURUF BESAR</option>
+                                    <option value="lowercase">huruf kecil</option>
+                                    <option value="capitalize">Huruf Kapital</option>
+                                    <option value="reverse">Balik Teks</option>
+                                    <option value="binary">Biner</option>
+                                    <option value="base64">Base64</option>
+                                </select>
+                            </div>
+                            <button class="convert-btn" data-action="text-convert">Konversi</button>
+                            <div class="result-box">
+                                <div class="text-output" id="text-result">Hasil akan muncul di sini</div>
+                            </div>
+                        `;
+                        break;
+                    case 'tax-interest':
+                        formHTML = `<div class="input-group"><label for="principal">Nilai Pokok</label><input type="number" id="principal" placeholder="Masukkan nilai pokok"></div><div class="input-group"><label for="rate">Tarif (%)</label><input type="number" id="rate" placeholder="Masukkan tarif persentase"></div><div class="input-group"><label for="period">Periode</label><select id="period"><option value="daily">Harian</option><option value="monthly">Bulanan</option><option value="quarterly">Kuartalan</option><option value="yearly">Tahunan</option></select></div><div class="input-group"><label for="time">Waktu</label><input type="number" id="time" placeholder="Masukkan durasi"></div><button class="convert-btn" data-action="tax-calculate">Hitung</button><div class="result-box"><div class="result-value" id="tax-result">0</div></div>`;
+                        break;
+                    case 'scale':
+                        formHTML = `<div class="input-group"><label for="original-size">Ukuran Asli</label><input type="number" id="original-size" placeholder="Masukkan ukuran asli"></div><div class="input-group"><label for="from-scale">Dari Skala</label><select id="from-scale">${Object.entries(config.units).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}</select></div><div class="input-group"><label for="to-scale">Ke Skala</label><select id="to-scale">${Object.entries(config.units).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}</select></div><button class="convert-btn" data-action="scale-calculate">Konversi</button><div class="result-box"><div class="result-value" id="scale-result">0</div></div>`;
+                        break;
+                    case 'color':
+                        formHTML = `<div class="input-group"><label for="color-input">Warna</label><input type="color" id="color-input" value="#4facfe"></div><div class="color-preview" id="color-preview"></div><button class="convert-btn" data-action="color-convert">Konversi</button><div class="result-box"><div class="text-output" id="color-result"></div></div>`;
+                        break;
+                    case 'sound':
+                        formHTML = `<div class="input-group"><label for="sound-frequency">Frekuensi (Hz)</label><input type="range" id="sound-frequency" min="20" max="20000" value="440"><div class="result-value" id="frequency-value">440 Hz</div></div><div class="input-group"><label for="sound-type">Jenis Gelombang</label><select id="sound-type"><option value="sine">Sinus</option><option value="square">Kotak</option><option value="sawtooth">Gergaji</option><option value="triangle">Segitiga</option></select></div><button class="convert-btn" data-action="sound-play">Putar Suara</button><div class="sound-player"><p style="text-align:center; color: #a0a0a0;">Gunakan tombol untuk memutar suara</p></div>`;
+                        break;
+                    case 'coordinate':
+                        formHTML = `
+                            <div class="input-group">
+                                <label for="coord-format">Format Koordinat</label>
+                                <select id="coord-format">
+                                    <option value="decimal">Desimal</option>
+                                    <option value="dms">Derajat, Menit, Detik</option>
+                                    <option value="utm">UTM (Memerlukan library khusus)</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="latitude">Lintang</label>
+                                <input type="text" id="latitude" placeholder="Contoh: -6.2088">
+                            </div>
+                            <div class="input-group">
+                                <label for="longitude">Bujur</label>
+                                <input type="text" id="longitude" placeholder="Contoh: 106.8456">
+                            </div>
+                            <button class="convert-btn" id="coord-convert">Konversi</button>
+                            <div class="coordinate-map" id="coord-map">
+                                <i class="fas fa-map-marked-alt" style="font-size: 48px; color: rgba(79, 172, 254, 0.5);"></i>
+                            </div>
+                            <div class="result-box">
+                                <div class="text-output" id="coord-result">Hasil akan muncul di sini</div>
+                            </div>
+                        `;
+                        break;
+                }
+            } else if (config.specialConversion) {
+                formHTML = `
+                    <div class="input-group">
+                        <label for="value">Nilai</label>
+                        <input type="text" id="value" placeholder="Masukkan nilai (misal: 1.23e-5)">
+                    </div>
+                    <div class="input-group">
+                        <label for="from">Dari</label>
+                        <select id="from">
+                            ${Object.entries(config.units).map(([key, value]) => 
+                                `<option value="${key}">${value}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    <button class="swap-btn" id="swap-btn" title="Tukar Satuan">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                    <div class="input-group">
+                        <label for="to">Ke</label>
+                        <select id="to">
+                            ${Object.entries(config.units).map(([key, value]) => 
+                                `<option value="${key}">${value}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    <button class="convert-btn" data-action="convert">Konversi</button>
+                    <div class="result-box">
+                        <div class="result-value" id="result">0</div>
+                    </div>
+                `;
+            } else {
+                formHTML = `
+                    <div class="input-group">
+                        <label for="value">Nilai</label>
+                        <input type="text" id="value" placeholder="Masukkan nilai (misal: 1.23e-5)">
+                    </div>
+                    <div class="input-group">
+                        <label for="from">Dari</label>
+                        <select id="from">
+                            ${Object.entries(config.units).map(([key, value]) => 
+                                `<option value="${key}">${value}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    <button class="swap-btn" id="swap-btn" title="Tukar Satuan">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                    <div class="input-group">
+                        <label for="to">Ke</label>
+                        <select id="to">
+                            ${Object.entries(config.units).map(([key, value]) => 
+                                `<option value="${key}">${value}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                    <button class="convert-btn" data-action="convert">Konversi</button>
+                    <div class="result-box">
+                        <div class="result-value" id="result">0</div>
+                    </div>
+                `;
+            }
+            
+            converterForm.innerHTML = formHTML;
+            modal.style.display = 'flex';
+
+            // Event delegation untuk tombol umum
+            converterForm.addEventListener('click', (e) => {
+                if (e.target.matches('.convert-btn')) {
+                    const action = e.target.dataset.action;
+                    switch(action) {
+                        case 'tax-calculate': calculateTaxInterest(); break;
+                        case 'scale-calculate': calculateScale(); break;
+                        case 'color-convert': convertColor(); break;
+                        case 'text-convert': convertText(); break;
+                        case 'sound-play': playSound(); break;
+                        case 'convert': 
+                            if (type === 'temperature') convertTemperature();
+                            else if (type === 'slope') convertSlope();
+                            else if (type === 'angle') convertAngle();
+                            else convert(type); 
+                            break;
+                    }
+                }
+            });
+            
+            // Event listener untuk tombol tukar satuan
+            const swapBtn = document.getElementById('swap-btn');
+            if (swapBtn) {
+                swapBtn.addEventListener('click', () => {
+                    const fromSelect = document.getElementById('from');
+                    const toSelect = document.getElementById('to');
+                    const temp = fromSelect.value;
+                    fromSelect.value = toSelect.value;
+                    toSelect.value = temp;
+                });
+            }
+            
+            // Event listener khusus
+            if (type === 'color') {
+                const colorInput = document.getElementById('color-input');
+                const colorPreview = document.getElementById('color-preview');
+                colorPreview.style.backgroundColor = colorInput.value;
+                colorInput.addEventListener('input', (e) => { colorPreview.style.backgroundColor = e.target.value; });
+                convertColor();
+            }
+            if (type === 'sound') {
+                document.getElementById('sound-frequency').addEventListener('input', (e) => {
+                    document.getElementById('frequency-value').textContent = `${e.target.value} Hz`;
+                });
+            }
+            if (type === 'coordinate') {
+                document.getElementById('coord-convert').addEventListener('click', convertCoordinate);
+            }
+        }
+
+        // Fungsi konversi standar
+        function convert(type) {
+            const valueInput = document.getElementById('value').value;
+            let value;
+            
+            try {
+                value = parseFloat(valueInput);
+                if (isNaN(value)) {
+                    showNotification('Masukkan nilai yang valid!');
+                    return;
+                }
+            } catch (e) {
+                showNotification('Format nilai tidak valid!');
+                return;
+            }
+            
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const resultElement = document.getElementById('result');
+            
+            const config = converterConfigs[type];
+            const baseValue = value * config.conversionRates[from];
+            const result = baseValue / config.conversionRates[to];
+            
+            resultElement.textContent = formatResult(result);
+            showNotification('Konversi berhasil!');
+        }
+
+        // Fungsi konversi khusus untuk suhu
+        function convertTemperature() {
+            const valueInput = document.getElementById('value').value;
+            let value;
+            
+            try {
+                value = parseFloat(valueInput);
+                if (isNaN(value)) {
+                    showNotification('Masukkan nilai yang valid!');
+                    return;
+                }
+            } catch (e) {
+                showNotification('Format nilai tidak valid!');
+                return;
+            }
+            
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const resultElement = document.getElementById('result');
+            
+            // Konversi ke Celsius sebagai basis
+            let celsius;
+            switch(from) {
+                case 'C': celsius = value; break;
+                case 'F': celsius = (value - 32) * 5/9; break;
+                case 'K': celsius = value - 273.15; break;
+                case 'Re': celsius = value * 5/4; break;
+                case 'Ra': celsius = (value - 491.67) * 5/9; break;
+            }
+            
+            // Konversi dari Celsius ke target
+            let result;
+            switch(to) {
+                case 'C': result = celsius; break;
+                case 'F': result = celsius * 9/5 + 32; break;
+                case 'K': result = celsius + 273.15; break;
+                case 'Re': result = celsius * 4/5; break;
+                case 'Ra': result = celsius * 9/5 + 491.67; break;
+            }
+            
+            resultElement.textContent = formatResult(result);
+            showNotification('Konversi berhasil!');
+        }
+
+        // Fungsi konversi khusus untuk kemiringan
+        function convertSlope() {
+            const valueInput = document.getElementById('value').value;
+            let value;
+            
+            try {
+                value = parseFloat(valueInput);
+                if (isNaN(value)) {
+                    showNotification('Masukkan nilai yang valid!');
+                    return;
+                }
+            } catch (e) {
+                showNotification('Format nilai tidak valid!');
+                return;
+            }
+            
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const resultElement = document.getElementById('result');
+            
+            // Konversi ke derajat sebagai basis
+            let degrees;
+            switch(from) {
+                case 'deg': degrees = value; break;
+                case '%': degrees = Math.atan(value/100) * 180/Math.PI; break;
+                case 'rad': degrees = value * 180/Math.PI; break;
+                case 'ratio': degrees = Math.atan(value) * 180/Math.PI; break;
+            }
+            
+            // Konversi dari derajat ke target
+            let result;
+            switch(to) {
+                case 'deg': result = degrees; break;
+                case '%': result = Math.tan(degrees * Math.PI/180) * 100; break;
+                case 'rad': result = degrees * Math.PI/180; break;
+                case 'ratio': result = Math.tan(degrees * Math.PI/180); break;
+            }
+            
+            resultElement.textContent = formatResult(result);
+            showNotification('Konversi berhasil!');
+        }
+
+        // Fungsi konversi khusus untuk sudut
+        function convertAngle() {
+            const valueInput = document.getElementById('value').value;
+            let value;
+            
+            try {
+                value = parseFloat(valueInput);
+                if (isNaN(value)) {
+                    showNotification('Masukkan nilai yang valid!');
+                    return;
+                }
+            } catch (e) {
+                showNotification('Format nilai tidak valid!');
+                return;
+            }
+            
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const resultElement = document.getElementById('result');
+            
+            // Konversi ke radian sebagai basis
+            let radians;
+            switch(from) {
+                case 'deg': radians = value * Math.PI/180; break;
+                case 'rad': radians = value; break;
+                case 'grad': radians = value * Math.PI/200; break;
+                case 'turn': radians = value * 2 * Math.PI; break;
+            }
+            
+            // Konversi dari radian ke target
+            let result;
+            switch(to) {
+                case 'deg': result = radians * 180/Math.PI; break;
+                case 'rad': result = radians; break;
+                case 'grad': result = radians * 200/Math.PI; break;
+                case 'turn': result = radians / (2 * Math.PI); break;
+            }
+            
+            resultElement.textContent = formatResult(result);
+            showNotification('Konversi berhasil!');
+        }
+
+        // Fungsi untuk menghitung pajak/bunga
+        function calculateTaxInterest() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const rate = parseFloat(document.getElementById('rate').value) / 100;
+            const period = document.getElementById('period').value;
+            const time = parseFloat(document.getElementById('time').value);
+            const resultElement = document.getElementById('tax-result');
+            
+            if (isNaN(principal) || isNaN(rate) || isNaN(time)) {
+                showNotification('Masukkan nilai yang valid!');
+                return;
+            }
+            
+            let result;
+            switch(period) {
+                case 'daily': 
+                    result = principal * rate * time;
+                    break;
+                case 'monthly': 
+                    result = principal * rate * time;
+                    break;
+                case 'quarterly': 
+                    result = principal * rate * time;
+                    break;
+                case 'yearly': 
+                    result = principal * rate * time;
+                    break;
+            }
+            
+            resultElement.textContent = formatResult(result);
+            showNotification('Perhitungan berhasil!');
+        }
+
+        // Fungsi untuk menghitung skala
+        function calculateScale() {
+            const originalSize = parseFloat(document.getElementById('original-size').value);
+            const fromScale = document.getElementById('from-scale').value;
+            const toScale = document.getElementById('to-scale').value;
+            const resultElement = document.getElementById('scale-result');
+            
+            if (isNaN(originalSize)) {
+                showNotification('Masukkan ukuran asli yang valid!');
+                return;
+            }
+            
+            // Parse scale ratios
+            const fromParts = fromScale.split(':').map(Number);
+            const toParts = toScale.split(':').map(Number);
+            
+            // Calculate conversion factor
+            const fromRatio = fromParts[1] / fromParts[0];
+            const toRatio = toParts[1] / toParts[0];
+            const conversionFactor = fromRatio / toRatio;
+            
+            // Calculate result
+            const result = originalSize * conversionFactor;
+            
+            resultElement.textContent = formatResult(result);
+            showNotification('Konversi skala berhasil!');
+        }
+
+        // Fungsi untuk konversi warna
+        function convertColor() {
+            const colorInput = document.getElementById('color-input').value;
+            const resultElement = document.getElementById('color-result');
+            
+            // Convert hex to RGB
+            const r = parseInt(colorInput.substr(1,2), 16);
+            const g = parseInt(colorInput.substr(3,2), 16);
+            const b = parseInt(colorInput.substr(5,2), 16);
+            
+            // Convert to HSL
+            const rNorm = r / 255;
+            const gNorm = g / 255;
+            const bNorm = b / 255;
+            
+            const max = Math.max(rNorm, gNorm, bNorm);
+            const min = Math.min(rNorm, gNorm, bNorm);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0; // achromatic
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                
+                switch (max) {
+                    case rNorm: h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) / 6; break;
+                    case gNorm: h = ((bNorm - rNorm) / d + 2) / 6; break;
+                    case bNorm: h = ((rNorm - gNorm) / d + 4) / 6; break;
+                }
+            }
+            
+            // Format result
+            const rgbString = `RGB(${r}, ${g}, ${b})`;
+            const hslString = `HSL(${Math.round(h * 360)}°, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+            const hexString = colorInput.toUpperCase();
+            
+            resultElement.innerHTML = `
+                <div>HEX: ${hexString}</div>
+                <div>${rgbString}</div>
+                <div>${hslString}</div>
+            `;
+        }
+
+        // Fungsi untuk konversi teks
+        function convertText() {
+            const textInput = document.getElementById('text-input').value;
+            const conversionType = document.getElementById('text-conversion').value;
+            const resultElement = document.getElementById('text-result');
+            
+            if (!textInput) {
+                showNotification('Masukkan teks terlebih dahulu!');
+                return;
+            }
+            
+            let result;
+            switch(conversionType) {
+                case 'uppercase':
+                    result = textInput.toUpperCase();
+                    break;
+                case 'lowercase':
+                    result = textInput.toLowerCase();
+                    break;
+                case 'capitalize':
+                    result = textInput.replace(/\b\w/g, char => char.toUpperCase());
+                    break;
+                case 'reverse':
+                    result = textInput.split('').reverse().join('');
+                    break;
+                case 'binary':
+                    result = textInput.split('').map(char => 
+                        char.charCodeAt(0).toString(2).padStart(8, '0')
+                    ).join(' ');
+                    break;
+                case 'base64':
+                    result = btoa(textInput);
+                    break;
+            }
+            
+            resultElement.textContent = result;
+            showNotification('Konversi teks berhasil!');
+        }
+
+        // Fungsi untuk memutar suara
+        function playSound() {
+            const frequency = parseInt(document.getElementById('sound-frequency').value);
+            const soundType = document.getElementById('sound-type').value;
+            const soundPlayer = document.querySelector('.sound-player');
+            
+            // Create audio context
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Create oscillator
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            // Set oscillator type
+            oscillator.type = soundType;
+            oscillator.frequency.value = frequency;
+            
+            // Connect nodes
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Set gain (volume)
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+            
+            // Start and stop oscillator
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 1);
+            
+            // Update player UI
+            soundPlayer.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-volume-up" style="font-size: 24px;"></i>
+                    <p>Memutar suara ${frequency} Hz...</p>
+                </div>
+            `;
+            
+            // Reset player UI after sound finishes
+            setTimeout(() => {
+                soundPlayer.innerHTML = '<p style="text-align:center; color: #a0a0a0;">Gunakan tombol untuk memutar suara</p>';
+            }, 1200);
+            
+            showNotification('Memutar suara...');
+        }
+
+        // Fungsi untuk konversi koordinat
+        function convertCoordinate() {
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const format = document.getElementById('coord-format').value;
+            const resultElement = document.getElementById('coord-result');
+            
+            if (isNaN(latitude) || isNaN(longitude)) {
+                showNotification('Masukkan koordinat yang valid!');
+                return;
+            }
+            
+            let result;
+            switch(format) {
+                case 'decimal':
+                    result = `Decimal: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
+                    break;
+                case 'dms':
+                    // Convert to DMS format
+                    const latDeg = Math.floor(Math.abs(latitude));
+                    const latMin = Math.floor((Math.abs(latitude) - latDeg) * 60);
+                    const latSec = ((Math.abs(latitude) - latDeg) * 60 - latMin) * 60;
+                    const latDir = latitude >= 0 ? 'N' : 'S';
+                    
+                    const lonDeg = Math.floor(Math.abs(longitude));
+                    const lonMin = Math.floor((Math.abs(longitude) - lonDeg) * 60);
+                    const lonSec = ((Math.abs(longitude) - lonDeg) * 60 - lonMin) * 60;
+                    const lonDir = longitude >= 0 ? 'E' : 'W';
+                    
+                    result = `DMS: ${latDeg}°${latMin}'${latSec.toFixed(2)}"${latDir}, ${lonDeg}°${lonMin}'${lonSec.toFixed(2)}"${lonDir}`;
+                    break;
+                case 'utm':
+                    result = 'Konversi UTM memerlukan library khusus yang tidak tersedia dalam aplikasi ini.';
+                    break;
+            }
+            
+            resultElement.textContent = result;
+            
+            // Update map preview (simplified)
+            const coordMap = document.getElementById('coord-map');
+            coordMap.innerHTML = `
+                <div style="text-align: center;">
+                    <i class="fas fa-map-marker-alt" style="font-size: 48px; color: #4facfe;"></i>
+                    <p style="margin-top: 10px;">${latitude.toFixed(4)}, ${longitude.toFixed(4)}</p>
+                </div>
+            `;
+            
+            showNotification('Konversi koordinat berhasil!');
+        }
+
+        // Fungsi helper untuk memformat hasil
+        function formatResult(value) {
+            // Handle very large or very small numbers
+            if (Math.abs(value) >= 1e6 || (Math.abs(value) < 1e-3 && value !== 0)) {
+                return value.toExponential(6);
+            }
+            
+            // Handle regular numbers
+            const rounded = Math.round(value * 1000000) / 1000000;
+            return rounded.toLocaleString('id-ID');
+        }
+    </script>
+</body>
+</html>
