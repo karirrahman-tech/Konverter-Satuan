@@ -176,7 +176,7 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 30px; /* Jarak antar kategori */
+            gap: 30px;
         }
 
         /* Category Styles */
@@ -467,6 +467,7 @@
         .sound-player {
             width: 100%;
             margin: 15px 0;
+            text-align: center;
         }
 
         .coordinate-map {
@@ -784,7 +785,6 @@
     <script>
         // Splash Screen Management
         window.addEventListener('load', () => {
-            // Update loading dots animation
             const loadingDots = document.querySelector('.loading-dots');
             let dotCount = 0;
             const dotInterval = setInterval(() => {
@@ -792,21 +792,18 @@
                 loadingDots.textContent = '.'.repeat(dotCount || 1);
             }, 500);
 
-            // Hide splash screen after loading
             setTimeout(() => {
                 clearInterval(dotInterval);
                 const splashScreen = document.getElementById('splash-screen');
                 const mainApp = document.getElementById('main-app');
                 
-                // Add fade out animation to splash screen
                 splashScreen.classList.add('fade-out');
                 
-                // Show main app after a short delay
                 setTimeout(() => {
                     splashScreen.style.display = 'none';
                     mainApp.classList.add('show');
                 }, 800);
-            }, 2500); // 2.5 seconds loading time
+            }, 2500);
         });
 
         // Update current time
@@ -822,250 +819,133 @@
 
         // Struktur konfigurasi konverter yang telah diperbarui dan dilengkapi
         const converterConfigs = {
-            // PERBAIKAN: Kategori Panjang menggunakan satuan SI yang benar
             length: {
                 title: 'Panjang',
-                units: {
-                    'km': 'Kilometer',
-                    'hm': 'Hektometer',
-                    'dam': 'Dekameter',
-                    'm': 'Meter',
-                    'dm': 'Desimeter',
-                    'cm': 'Sentimeter',
-                    'mm': 'Milimeter'
-                },
-                // Basis: Meter
-                conversionRates: {
-                    'km': 0.001,
-                    'hm': 0.01,
-                    'dam': 0.1,
-                    'm': 1,
-                    'dm': 10,
-                    'cm': 100,
-                    'mm': 1000
-                }
+                units: { 'km': 'Kilometer', 'hm': 'Hektometer', 'dam': 'Dekameter', 'm': 'Meter', 'dm': 'Desimeter', 'cm': 'Sentimeter', 'mm': 'Milimeter' },
+                // Basis: Meter. 1 meter = X unit.
+                conversionRates: { 'km': 0.001, 'hm': 0.01, 'dam': 0.1, 'm': 1, 'dm': 10, 'cm': 100, 'mm': 1000 }
             },
-            // PERBAIKAN: Kategori Luas menggunakan satuan SI yang benar
             area: {
                 title: 'Luas',
-                units: {
-                    'km²': 'Kilometer Persegi',
-                    'hm²': 'Hektometer Persegi',
-                    'dam²': 'Dekameter Persegi',
-                    'm²': 'Meter Persegi',
-                    'dm²': 'Desimeter Persegi',
-                    'cm²': 'Sentimeter Persegi',
-                    'mm²': 'Milimeter Persegi',
-                    'ha': 'Hektare',
-                    'a': 'Are'
-                },
-                // Basis: Meter Persegi
-                conversionRates: {
-                    'km²': 0.000001,
-                    'hm²': 0.0001,
-                    'dam²': 0.01,
-                    'm²': 1,
-                    'dm²': 100,
-                    'cm²': 10000,
-                    'mm²': 1000000,
-                    'ha': 0.0001,
-                    'a': 0.01
-                }
+                units: { 'km²': 'Kilometer Persegi', 'ha': 'Hektare', 'a': 'Are', 'm²': 'Meter Persegi', 'dm²': 'Desimeter Persegi', 'cm²': 'Sentimeter Persegi', 'mm²': 'Milimeter Persegi' },
+                // Basis: Meter Persegi. 1 m² = X unit.
+                conversionRates: { 'km²': 0.000001, 'ha': 0.0001, 'a': 0.01, 'm²': 1, 'dm²': 100, 'cm²': 10000, 'mm²': 1000000 }
             },
-            // PERBAIKAN: Kategori Volume menggunakan satuan SI yang benar
             volume: {
                 title: 'Volume',
-                units: {
-                    'km³': 'Kilometer Kubik',
-                    'hm³': 'Hektometer Kubik',
-                    'dam³': 'Dekameter Kubik',
-                    'm³': 'Meter Kubik',
-                    'dm³': 'Desimeter Kubik',
-                    'cm³': 'Sentimeter Kubik',
-                    'mm³': 'Milimeter Kubik',
-                    'L': 'Liter',
-                    'mL': 'Mililiter'
-                },
-                // Basis: Meter Kubik
-                conversionRates: {
-                    'km³': 0.000000001,
-                    'hm³': 0.000001,
-                    'dam³': 0.001,
-                    'm³': 1,
-                    'dm³': 1000,
-                    'cm³': 1000000,
-                    'mm³': 1000000000,
-                    'L': 1000,
-                    'mL': 1000000
-                }
+                units: { 'km³': 'Kilometer Kubik', 'm³': 'Meter Kubik', 'L': 'Liter', 'dm³': 'Desimeter Kubik', 'cm³': 'Sentimeter Kubik', 'mm³': 'Milimeter Kubik', 'mL': 'Mililiter' },
+                // Basis: Meter Kubik. 1 m³ = X unit.
+                conversionRates: { 'km³': 0.000000001, 'm³': 1, 'L': 1000, 'dm³': 1000, 'cm³': 1000000, 'mm³': 1000000000, 'mL': 1000000 }
             },
             mass: {
                 title: 'Massa / Berat',
-                units: {
-                    't': 'Ton',
-                    'q': 'Kuintal',
-                    'kg': 'Kilogram',
-                    'g': 'Gram',
-                    'mg': 'Miligram',
-                    'µg': 'Mikrogram',
-                    'lb': 'Pon (Pound)',
-                    'oz': 'Ons (Internasional)',
-                    'ons': 'Ons (Indonesia)',
-                    'slug': 'Slug'
-                },
-                // Basis: Kilogram (kg)
-                conversionRates: {
-                    't': 0.001,        // 1 kg = 0.001 Ton
-                    'q': 0.01,         // 1 kg = 0.01 Kuintal
-                    'kg': 1,           // 1 kg = 1 Kilogram
-                    'g': 1000,         // 1 kg = 1000 Gram
-                    'mg': 1000000,     // 1 kg = 1.000.000 Miligram
-                    'µg': 1000000000,  // 1 kg = 1.000.000.000 Mikrogram
-                    'lb': 2.20462262185, // 1 kg ≈ 2.20462 Pon
-                    'oz': 35.2739619496, // 1 kg ≈ 35.27396 Ons (Internasional)
-                    'ons': 10,         // 1 kg = 10 Ons (Indonesia, 100g)
-                    'slug': 0.0685218   // 1 kg ≈ 0.0685218 Slug
-                }
+                units: { 't': 'Ton', 'kg': 'Kilogram', 'g': 'Gram', 'mg': 'Miligram', 'µg': 'Mikrogram', 'lb': 'Pon (Pound)', 'oz': 'Ons (Internasional)', 'ons': 'Ons (Indonesia)' },
+                // Basis: Kilogram. 1 kg = X unit.
+                conversionRates: { 't': 0.001, 'kg': 1, 'g': 1000, 'mg': 1000000, 'µg': 1000000000, 'lb': 2.20462262185, 'oz': 35.2739619496, 'ons': 10 }
             },
             time: {
                 title: 'Waktu',
                 units: { 'y': 'Tahun', 'mo': 'Bulan', 'w': 'Minggu', 'd': 'Hari', 'h': 'Jam', 'min': 'Menit', 's': 'Detik', 'ms': 'Milidetik', 'µs': 'Mikrodetik', 'ns': 'Nanodetik' },
+                // Basis: Detik. 1 s = X unit.
                 conversionRates: { 'y': 3.154e7, 'mo': 2.628e6, 'w': 604800, 'd': 86400, 'h': 3600, 'min': 60, 's': 1, 'ms': 1000, 'µs': 1000000, 'ns': 1000000000 }
             },
             speed: {
                 title: 'Kecepatan',
-                units: {
-                    'km/s': 'Kilometer per Detik',
-                    'km/h': 'Kilometer per Jam',
-                    'm/s': 'Meter per Detik',
-                    'm/h': 'Meter per Jam',
-                    'cm/s': 'Sentimeter per Detik',
-                    'cm/h': 'Sentimeter per Jam',
-                    'mm/s': 'Milimeter per Detik',
-                    'mm/h': 'Milimeter per Jam',
-                    'mph': 'Mil per Jam',
-                    'knot': 'Knot',
-                    'ft/s': 'Kaki per Detik',
-                    'ft/h': 'Kaki per Jam',
-                    'Mach': 'Mach'
-                },
-                // Basis: Meter per Detik (m/s)
-                conversionRates: {
-                    'km/s': 0.001,        // 1 m/s = 0.001 km/s
-                    'km/h': 3.6,          // 1 m/s = 3.6 km/h
-                    'm/s': 1,             // 1 m/s = 1 m/s
-                    'm/h': 3600,          // 1 m/s = 3600 m/h
-                    'cm/s': 100,          // 1 m/s = 100 cm/s
-                    'cm/h': 360000,       // 1 m/s = 360000 cm/h
-                    'mm/s': 1000,         // 1 m/s = 1000 mm/s
-                    'mm/h': 3600000,      // 1 m/s = 3600000 mm/h
-                    'mph': 2.23693629205, // 1 m/s ≈ 2.23694 mph
-                    'knot': 1.94384449244, // 1 m/s ≈ 1.94384 knot
-                    'ft/s': 3.28083989501, // 1 m/s ≈ 3.28084 ft/s
-                    'ft/h': 11811.023622, // 1 m/s ≈ 11811.02 ft/h
-                    'Mach': 0.00291545    // 1 m/s ≈ 0.00291545 Mach
-                }
+                units: { 'km/s': 'Kilometer per Detik', 'km/h': 'Kilometer per Jam', 'm/s': 'Meter per Detik', 'mph': 'Mil per Jam', 'knot': 'Knot', 'ft/s': 'Kaki per Detik', 'Mach': 'Mach' },
+                // Basis: Meter per Detik. 1 m/s = X unit.
+                conversionRates: { 'km/s': 0.001, 'km/h': 3.6, 'm/s': 1, 'mph': 2.23693629205, 'knot': 1.94384449244, 'ft/s': 3.28083989501, 'Mach': 0.00291545 }
             },
-            temperature: {
-                title: 'Suhu',
-                units: {
-                    'C': 'Celsius (°C)',
-                    'F': 'Fahrenheit (°F)',
-                    'K': 'Kelvin (K)',
-                    'Re': 'Réamur (°Re)',
-                    'Ra': 'Rankine (°Ra)'
-                },
-                specialConversion: true
-            },
+            temperature: { title: 'Suhu', specialConversion: true },
             pressure: {
                 title: 'Tekanan',
-                units: { 'Pa': 'Pascal', 'kPa': 'Kilopascal', 'bar': 'Bar', 'atm': 'Atmosfer', 'psi': 'PSI', 'Torr': 'Torr', 'mmHg': 'mmHg', 'inH2O': 'Inci Air' },
-                conversionRates: { 'Pa': 1, 'kPa': 0.001, 'bar': 0.00001, 'atm': 0.00000986923, 'psi': 0.000145038, 'Torr': 0.00750062, 'mmHg': 0.00750062, 'inH2O': 0.00401463 }
+                units: { 'Pa': 'Pascal', 'kPa': 'Kilopascal', 'bar': 'Bar', 'atm': 'Atmosfer', 'psi': 'PSI', 'Torr': 'Torr', 'mmHg': 'mmHg' },
+                // Basis: Pascal. 1 Pa = X unit.
+                conversionRates: { 'Pa': 1, 'kPa': 0.001, 'bar': 0.00001, 'atm': 0.00000986923, 'psi': 0.000145038, 'Torr': 0.00750062, 'mmHg': 0.00750062 }
             },
             energy: {
                 title: 'Energi',
-                units: { 'J': 'Joule', 'kJ': 'Kilojoule', 'cal': 'Kalori', 'kcal': 'Kilokalori', 'Wh': 'Watt-jam', 'kWh': 'Kilowatt-jam', 'BTU': 'BTU', 'eV': 'Elektronvolt', 'ft-lb': 'Kaki-Pound' },
-                conversionRates: { 'J': 1, 'kJ': 0.001, 'cal': 0.239006, 'kcal': 0.000239006, 'Wh': 0.000277778, 'kWh': 0.000000277778, 'BTU': 0.000947817, 'eV': 6.242e18, 'ft-lb': 0.737562 }
+                units: { 'J': 'Joule', 'kJ': 'Kilojoule', 'cal': 'Kalori', 'kcal': 'Kilokalori', 'Wh': 'Watt-jam', 'kWh': 'Kilowatt-jam', 'BTU': 'BTU' },
+                // Basis: Joule. 1 J = X unit.
+                conversionRates: { 'J': 1, 'kJ': 0.001, 'cal': 0.239006, 'kcal': 0.000239006, 'Wh': 0.000277778, 'kWh': 0.000000277778, 'BTU': 0.000947817 }
             },
             power: {
                 title: 'Daya',
                 units: { 'W': 'Watt', 'kW': 'Kilowatt', 'MW': 'Megawatt', 'hp': 'Tenaga Kuda', 'BTU/h': 'BTU per Jam' },
+                // Basis: Watt. 1 W = X unit.
                 conversionRates: { 'W': 1, 'kW': 0.001, 'MW': 0.000001, 'hp': 0.00134102, 'BTU/h': 3.41214 }
             },
             data: {
                 title: 'Data (digital)',
                 units: { 'bit': 'Bit', 'B': 'Byte', 'KB': 'Kilobyte', 'MB': 'Megabyte', 'GB': 'Gigabyte', 'TB': 'Terabyte', 'PB': 'Petabyte' },
+                // Basis: Byte. 1 B = X unit.
                 conversionRates: { 'bit': 8, 'B': 1, 'KB': 0.0009765625, 'MB': 0.000000953674, 'GB': 0.000000000931323, 'TB': 0.000000000000909495, 'PB': 0.000000000000000888178 }
             },
             'transfer-speed': {
                 title: 'Kecepatan Transfer',
                 units: { 'bps': 'bit per detik', 'B/s': 'Byte per detik', 'Kbps': 'Kilobit per detik', 'KB/s': 'Kilobyte per detik', 'Mbps': 'Megabit per detik', 'MB/s': 'Megabyte per detik', 'Gbps': 'Gigabit per detik', 'GB/s': 'Gigabyte per detik' },
+                // Basis: bit per detik. 1 bps = X unit.
                 conversionRates: { 'bps': 1, 'B/s': 0.125, 'Kbps': 0.001, 'KB/s': 0.000125, 'Mbps': 0.000001, 'MB/s': 0.000000125, 'Gbps': 0.000000001, 'GB/s': 0.000000000125 }
             },
             'tax-interest': { title: 'Pajak / Bunga', specialForm: true },
-            scale: {
-                title: 'Skala Gambar',
-                units: { '1:1': 'Ukuran Asli', '1:10': '1:10', '1:20': '1:20', '1:50': '1:50', '1:100': '1:100', '1:200': '1:200', '1:500': '1:500', '1:1000': '1:1000', '10:1': '10:1', '5:1': '5:1', '2:1': '2:1' },
-                specialForm: true
-            },
+            scale: { title: 'Skala Gambar', specialForm: true },
             force: {
                 title: 'Gaya / Beban',
-                units: { 'N': 'Newton', 'kN': 'Kilonewton', 'kgf': 'Kilogram-force', 'lbf': 'Pound-force', 'dyn': 'Dyne' },
-                conversionRates: { 'N': 1, 'kN': 0.001, 'kgf': 0.101972, 'lbf': 0.224809, 'dyn': 100000 }
+                units: { 'N': 'Newton', 'kN': 'Kilonewton', 'kgf': 'Kilogram-force', 'lbf': 'Pound-force' },
+                // Basis: Newton. 1 N = X unit.
+                conversionRates: { 'N': 1, 'kN': 0.001, 'kgf': 0.101972, 'lbf': 0.224809 }
             },
-            slope: {
-                title: 'Kemiringan',
-                units: { 'deg': 'Derajat', '%': 'Persen', 'rad': 'Radian', 'ratio': 'Rasio (rise/run)' },
-                specialConversion: true
-            },
+            slope: { title: 'Kemiringan', specialConversion: true },
             material: {
                 title: 'Satuan Material',
                 units: { 'kg/m³': 'kg/m³', 'g/cm³': 'g/cm³', 'lb/ft³': 'lb/ft³' },
+                // Basis: kg/m³. 1 kg/m³ = X unit.
                 conversionRates: { 'kg/m³': 1, 'g/cm³': 0.001, 'lb/ft³': 0.062428 }
             },
             color: { title: 'Warna', specialForm: true },
             text: { title: 'Teks', specialForm: true },
             sound: { title: 'Sound Generator', specialForm: true },
             coordinate: { title: 'Koordinat', specialForm: true },
-            // Kategori Baru
             acceleration: {
                 title: 'Percepatan',
                 units: { 'm/s²': 'Meter per Detik Kuadrat', 'g': 'Gaya-g', 'ft/s²': 'Kaki per Detik Kuadrat' },
+                // Basis: m/s². 1 m/s² = X unit.
                 conversionRates: { 'm/s²': 1, 'g': 0.101972, 'ft/s²': 3.28084 }
             },
-            angle: {
-                title: 'Sudut',
-                units: { 'deg': 'Derajat', 'rad': 'Radian', 'grad': 'Gradian', 'turn': 'Putaran' },
-                specialConversion: true
-            },
+            angle: { title: 'Sudut', specialConversion: true },
             'electric-current': {
                 title: 'Arus Listrik',
                 units: { 'A': 'Ampere', 'mA': 'Miliampere', 'µA': 'Mikroampere', 'kA': 'Kiloampere' },
+                // Basis: Ampere. 1 A = X unit.
                 conversionRates: { 'A': 1, 'mA': 1000, 'µA': 1000000, 'kA': 0.001 }
             },
             voltage: {
                 title: 'Tegangan',
                 units: { 'V': 'Volt', 'mV': 'Milivolt', 'µV': 'Mikrovolt', 'kV': 'Kilovolt' },
+                // Basis: Volt. 1 V = X unit.
                 conversionRates: { 'V': 1, 'mV': 1000, 'µV': 1000000, 'kV': 0.001 }
             },
             resistance: {
                 title: 'Resistansi',
                 units: { 'Ω': 'Ohm', 'mΩ': 'Miliohm', 'kΩ': 'Kiloohm', 'MΩ': 'Megaohm' },
+                // Basis: Ohm. 1 Ω = X unit.
                 conversionRates: { 'Ω': 1, 'mΩ': 1000, 'kΩ': 0.001, 'MΩ': 0.000001 }
             },
             viscosity: {
                 title: 'Viskositas',
                 units: { 'Pa·s': 'Pascal-detik', 'mPa·s': 'MiliPascal-detik', 'cP': 'Centipoise', 'St': 'Stokes' },
+                // Basis: Pa·s. 1 Pa·s = X unit.
                 conversionRates: { 'Pa·s': 1, 'mPa·s': 1000, 'cP': 1000, 'St': 10000 }
             },
             illuminance: {
                 title: 'Pencahayaan',
                 units: { 'lx': 'Lux', 'fc': 'Foot-candle', 'ph': 'Phot' },
+                // Basis: Lux. 1 lx = X unit.
                 conversionRates: { 'lx': 1, 'fc': 0.092903, 'ph': 0.0001 }
             },
             frequency: {
                 title: 'Frekuensi',
                 units: { 'Hz': 'Hertz', 'kHz': 'Kilohertz', 'MHz': 'Megahertz', 'GHz': 'Gigahertz', 'rpm': 'Rotasi per Menit' },
+                // Basis: Hertz. 1 Hz = X unit.
                 conversionRates: { 'Hz': 1, 'kHz': 0.001, 'MHz': 0.000001, 'GHz': 0.000000001, 'rpm': 60 }
             }
         };
@@ -1078,17 +958,39 @@
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notification-text');
 
+        let currentConverterType = null;
+        let audioContext = null;
+        let oscillator = null;
+        let gainNode = null;
+
         function showNotification(message) {
             notificationText.textContent = message;
             notification.classList.add('show');
             setTimeout(() => { notification.classList.remove('show'); }, 3000);
         }
 
-        closeModalBtn.addEventListener('click', () => { modal.style.display = 'none'; });
-        window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+        closeModalBtn.addEventListener('click', () => { 
+            modal.style.display = 'none';
+            if (oscillator) {
+                oscillator.stop();
+                oscillator = null;
+            }
+        });
+        window.addEventListener('click', (e) => { 
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                if (oscillator) {
+                    oscillator.stop();
+                    oscillator = null;
+                }
+            } 
+        });
 
         document.querySelectorAll('.converter-item').forEach(item => {
-            item.addEventListener('click', () => { openConverter(item.getAttribute('data-type')); });
+            item.addEventListener('click', () => { 
+                currentConverterType = item.getAttribute('data-type');
+                openConverter(currentConverterType); 
+            });
         });
 
         function openConverter(type) {
@@ -1100,26 +1002,10 @@
                 switch(type) {
                     case 'text':
                         formHTML = `
-                            <div class="input-group">
-                                <label for="text-input">Teks</label>
-                                <textarea id="text-input" rows="4" placeholder="Masukkan teks"></textarea>
-                            </div>
-                            <div class="input-group">
-                                <label for="text-conversion">Konversi</label>
-                                <select id="text-conversion">
-                                    <option value="uppercase">HURUF BESAR</option>
-                                    <option value="lowercase">huruf kecil</option>
-                                    <option value="capitalize">Huruf Kapital</option>
-                                    <option value="reverse">Balik Teks</option>
-                                    <option value="binary">Biner</option>
-                                    <option value="base64">Base64</option>
-                                </select>
-                            </div>
+                            <div class="input-group"><label for="text-input">Teks</label><textarea id="text-input" rows="4" placeholder="Masukkan teks"></textarea></div>
+                            <div class="input-group"><label for="text-conversion">Konversi</label><select id="text-conversion"><option value="uppercase">HURUF BESAR</option><option value="lowercase">huruf kecil</option><option value="capitalize">Huruf Kapital</option><option value="reverse">Balik Teks</option><option value="binary">Biner</option><option value="base64">Base64</option></select></div>
                             <button class="convert-btn" data-action="text-convert">Konversi</button>
-                            <div class="result-box">
-                                <div class="text-output" id="text-result">Hasil akan muncul di sini</div>
-                            </div>
-                        `;
+                            <div class="result-box"><div class="text-output" id="text-result">Hasil akan muncul di sini</div></div>`;
                         break;
                     case 'tax-interest':
                         formHTML = `<div class="input-group"><label for="principal">Nilai Pokok</label><input type="number" id="principal" placeholder="Masukkan nilai pokok"></div><div class="input-group"><label for="rate">Tarif (%)</label><input type="number" id="rate" placeholder="Masukkan tarif persentase"></div><div class="input-group"><label for="period">Periode</label><select id="period"><option value="daily">Harian</option><option value="monthly">Bulanan</option><option value="quarterly">Kuartalan</option><option value="yearly">Tahunan</option></select></div><div class="input-group"><label for="time">Waktu</label><input type="number" id="time" placeholder="Masukkan durasi"></div><button class="convert-btn" data-action="tax-calculate">Hitung</button><div class="result-box"><div class="result-value" id="tax-result">0</div></div>`;
@@ -1131,200 +1017,123 @@
                         formHTML = `<div class="input-group"><label for="color-input">Warna</label><input type="color" id="color-input" value="#4facfe"></div><div class="color-preview" id="color-preview"></div><button class="convert-btn" data-action="color-convert">Konversi</button><div class="result-box"><div class="text-output" id="color-result"></div></div>`;
                         break;
                     case 'sound':
-                        formHTML = `<div class="input-group"><label for="sound-frequency">Frekuensi (Hz)</label><input type="range" id="sound-frequency" min="20" max="20000" value="440"><div class="result-value" id="frequency-value">440 Hz</div></div><div class="input-group"><label for="sound-type">Jenis Gelombang</label><select id="sound-type"><option value="sine">Sinus</option><option value="square">Kotak</option><option value="sawtooth">Gergaji</option><option value="triangle">Segitiga</option></select></div><button class="convert-btn" data-action="sound-play">Putar Suara</button><div class="sound-player"><p style="text-align:center; color: #a0a0a0;">Gunakan tombol untuk memutar suara</p></div>`;
+                        formHTML = `<div class="input-group"><label for="sound-frequency">Frekuensi (Hz)</label><input type="range" id="sound-frequency" min="20" max="20000" value="440"><div class="result-value" id="frequency-value">440 Hz</div></div><div class="input-group"><label for="sound-type">Jenis Gelombang</label><select id="sound-type"><option value="sine">Sinus</option><option value="square">Kotak</option><option value="sawtooth">Gergaji</option><option value="triangle">Segitiga</option></select></div><button class="convert-btn" id="sound-play-btn" data-action="sound-play">Putar Suara</button><div class="sound-player"><p style="text-align:center; color: #a0a0a0;">Gunakan tombol untuk memutar/hentikan suara</p></div>`;
                         break;
                     case 'coordinate':
-                        formHTML = `
-                            <div class="input-group">
-                                <label for="coord-format">Format Koordinat</label>
-                                <select id="coord-format">
-                                    <option value="decimal">Desimal</option>
-                                    <option value="dms">Derajat, Menit, Detik</option>
-                                    <option value="utm">UTM (Memerlukan library khusus)</option>
-                                </select>
-                            </div>
-                            <div class="input-group">
-                                <label for="latitude">Lintang</label>
-                                <input type="text" id="latitude" placeholder="Contoh: -6.2088">
-                            </div>
-                            <div class="input-group">
-                                <label for="longitude">Bujur</label>
-                                <input type="text" id="longitude" placeholder="Contoh: 106.8456">
-                            </div>
-                            <button class="convert-btn" id="coord-convert">Konversi</button>
-                            <div class="coordinate-map" id="coord-map">
-                                <i class="fas fa-map-marked-alt" style="font-size: 48px; color: rgba(79, 172, 254, 0.5);"></i>
-                            </div>
-                            <div class="result-box">
-                                <div class="text-output" id="coord-result">Hasil akan muncul di sini</div>
-                            </div>
-                        `;
+                        formHTML = `<div class="input-group"><label for="coord-format">Format Input</label><select id="coord-format"><option value="decimal">Desimal (DD)</option></select></div><div class="input-group"><label for="latitude">Lintang (Latitude)</label><input type="text" id="latitude" placeholder="Contoh: -6.2088"></div><div class="input-group"><label for="longitude">Bujur (Longitude)</label><input type="text" id="longitude" placeholder="Contoh: 106.8456"></div><button class="convert-btn" id="coord-convert">Konversi</button><div class="coordinate-map" id="coord-map"><i class="fas fa-map-marked-alt" style="font-size: 48px; color: rgba(79, 172, 254, 0.5);"></i></div><div class="result-box"><div class="text-output" id="coord-result">Hasil akan muncul di sini</div></div>`;
                         break;
                 }
             } else if (config.specialConversion) {
                 formHTML = `
-                    <div class="input-group">
-                        <label for="value">Nilai</label>
-                        <input type="text" id="value" placeholder="Masukkan nilai (misal: 1.23e-5)">
-                    </div>
-                    <div class="input-group">
-                        <label for="from">Dari</label>
-                        <select id="from">
-                            ${Object.entries(config.units).map(([key, value]) => 
-                                `<option value="${key}">${value}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
-                    <button class="swap-btn" id="swap-btn" title="Tukar Satuan">
-                        <i class="fas fa-exchange-alt"></i>
-                    </button>
-                    <div class="input-group">
-                        <label for="to">Ke</label>
-                        <select id="to">
-                            ${Object.entries(config.units).map(([key, value]) => 
-                                `<option value="${key}">${value}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
+                    <div class="input-group"><label for="value">Nilai</label><input type="number" id="value" placeholder="Masukkan nilai"></div>
+                    <div class="input-group"><label for="from">Dari</label><select id="from">${Object.entries(config.units).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}</select></div>
+                    <button class="swap-btn" id="swap-btn" title="Tukar Satuan"><i class="fas fa-exchange-alt"></i></button>
+                    <div class="input-group"><label for="to">Ke</label><select id="to">${Object.entries(config.units).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}</select></div>
                     <button class="convert-btn" data-action="convert">Konversi</button>
-                    <div class="result-box">
-                        <div class="result-value" id="result">0</div>
-                    </div>
-                `;
+                    <div class="result-box"><div class="result-value" id="result">0</div></div>`;
             } else {
                 formHTML = `
-                    <div class="input-group">
-                        <label for="value">Nilai</label>
-                        <input type="text" id="value" placeholder="Masukkan nilai (misal: 1.23e-5)">
-                    </div>
-                    <div class="input-group">
-                        <label for="from">Dari</label>
-                        <select id="from">
-                            ${Object.entries(config.units).map(([key, value]) => 
-                                `<option value="${key}">${value}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
-                    <button class="swap-btn" id="swap-btn" title="Tukar Satuan">
-                        <i class="fas fa-exchange-alt"></i>
-                    </button>
-                    <div class="input-group">
-                        <label for="to">Ke</label>
-                        <select id="to">
-                            ${Object.entries(config.units).map(([key, value]) => 
-                                `<option value="${key}">${value}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
+                    <div class="input-group"><label for="value">Nilai</label><input type="number" id="value" placeholder="Masukkan nilai"></div>
+                    <div class="input-group"><label for="from">Dari</label><select id="from">${Object.entries(config.units).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}</select></div>
+                    <button class="swap-btn" id="swap-btn" title="Tukar Satuan"><i class="fas fa-exchange-alt"></i></button>
+                    <div class="input-group"><label for="to">Ke</label><select id="to">${Object.entries(config.units).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}</select></div>
                     <button class="convert-btn" data-action="convert">Konversi</button>
-                    <div class="result-box">
-                        <div class="result-value" id="result">0</div>
-                    </div>
-                `;
+                    <div class="result-box"><div class="result-value" id="result">0</div></div>`;
             }
             
             converterForm.innerHTML = formHTML;
             modal.style.display = 'flex';
 
-            // Event delegation untuk tombol umum
-            converterForm.addEventListener('click', (e) => {
-                if (e.target.matches('.convert-btn')) {
-                    const action = e.target.dataset.action;
-                    switch(action) {
-                        case 'tax-calculate': calculateTaxInterest(); break;
-                        case 'scale-calculate': calculateScale(); break;
-                        case 'color-convert': convertColor(); break;
-                        case 'text-convert': convertText(); break;
-                        case 'sound-play': playSound(); break;
-                        case 'convert': 
-                            if (type === 'temperature') convertTemperature();
-                            else if (type === 'slope') convertSlope();
-                            else if (type === 'angle') convertAngle();
-                            else convert(type); 
-                            break;
-                    }
-                }
-            });
-            
-            // Event listener untuk tombol tukar satuan
-            const swapBtn = document.getElementById('swap-btn');
-            if (swapBtn) {
-                swapBtn.addEventListener('click', () => {
-                    const fromSelect = document.getElementById('from');
-                    const toSelect = document.getElementById('to');
-                    const temp = fromSelect.value;
-                    fromSelect.value = toSelect.value;
-                    toSelect.value = temp;
-                });
-            }
-            
-            // Event listener khusus
+            // Specific event listeners for special forms
             if (type === 'color') {
-                const colorInput = document.getElementById('color-input');
-                const colorPreview = document.getElementById('color-preview');
-                colorPreview.style.backgroundColor = colorInput.value;
-                colorInput.addEventListener('input', (e) => { colorPreview.style.backgroundColor = e.target.value; });
-                convertColor();
+                document.getElementById('color-input').addEventListener('input', (e) => {
+                    document.getElementById('color-preview').style.backgroundColor = e.target.value;
+                });
+                document.getElementById('color-preview').style.backgroundColor = document.getElementById('color-input').value;
             }
             if (type === 'sound') {
                 document.getElementById('sound-frequency').addEventListener('input', (e) => {
                     document.getElementById('frequency-value').textContent = `${e.target.value} Hz`;
+                    if (oscillator) {
+                        oscillator.frequency.setValueAtTime(e.target.value, audioContext.currentTime);
+                    }
                 });
-            }
-            if (type === 'coordinate') {
-                document.getElementById('coord-convert').addEventListener('click', convertCoordinate);
             }
         }
 
-        // Fungsi konversi standar
-        function convert(type) {
-            const valueInput = document.getElementById('value').value;
-            let value;
-            
-            try {
-                value = parseFloat(valueInput);
-                if (isNaN(value)) {
-                    showNotification('Masukkan nilai yang valid!');
-                    return;
+        // Event delegation for all form actions
+        converterForm.addEventListener('click', (e) => {
+            if (e.target.matches('.convert-btn')) {
+                const action = e.target.dataset.action;
+                switch(action) {
+                    case 'tax-calculate': calculateTaxInterest(); break;
+                    case 'scale-calculate': calculateScale(); break;
+                    case 'color-convert': convertColor(); break;
+                    case 'text-convert': convertText(); break;
+                    case 'sound-play': playSound(); break;
+                    case 'convert': 
+                        if (currentConverterType === 'temperature') convertTemperature();
+                        else if (currentConverterType === 'slope') convertSlope();
+                        else if (currentConverterType === 'angle') convertAngle();
+                        else convertStandardUnit(currentConverterType);
+                        break;
                 }
-            } catch (e) {
-                showNotification('Format nilai tidak valid!');
+            }
+            
+            // Handle swap button
+            if (e.target.matches('#swap-btn') || e.target.parentElement.matches('#swap-btn')) {
+                const fromSelect = document.getElementById('from');
+                const toSelect = document.getElementById('to');
+                if(fromSelect && toSelect) {
+                    const temp = fromSelect.value;
+                    fromSelect.value = toSelect.value;
+                    toSelect.value = temp;
+                }
+            }
+        });
+
+        // --- CONVERSION FUNCTIONS ---
+
+        // **PERBAIKAN UTAMA**: Fungsi konversi standar dengan logika yang benar
+        function convertStandardUnit(type) {
+            const config = converterConfigs[type];
+            const value = parseFloat(document.getElementById('value').value);
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            
+            if (isNaN(value)) {
+                showNotification('Masukkan nilai yang valid!');
                 return;
             }
             
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            const resultElement = document.getElementById('result');
+            // 1. Konversi nilai input ke unit dasar (dibagi rate asal)
+            const valueInBaseUnit = value / config.conversionRates[from];
             
-            const config = converterConfigs[type];
-            const baseValue = value * config.conversionRates[from];
-            const result = baseValue / config.conversionRates[to];
+            // 2. Konversi dari unit dasar ke unit tujuan (dikalikan rate tujuan)
+            const result = valueInBaseUnit * config.conversionRates[to];
             
-            resultElement.textContent = formatResult(result);
+            // Format hasil
+            let formattedResult;
+            if (Math.abs(result) >= 1e6 || (Math.abs(result) < 1e-3 && result !== 0)) {
+                formattedResult = result.toExponential(6);
+            } else {
+                formattedResult = result.toLocaleString('id-ID', { maximumFractionDigits: 6 });
+            }
+            
+            document.getElementById('result').textContent = formattedResult;
             showNotification('Konversi berhasil!');
         }
 
-        // Fungsi konversi khusus untuk suhu
         function convertTemperature() {
-            const valueInput = document.getElementById('value').value;
-            let value;
+            const value = parseFloat(document.getElementById('value').value);
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
             
-            try {
-                value = parseFloat(valueInput);
-                if (isNaN(value)) {
-                    showNotification('Masukkan nilai yang valid!');
-                    return;
-                }
-            } catch (e) {
-                showNotification('Format nilai tidak valid!');
+            if (isNaN(value)) {
+                showNotification('Masukkan nilai yang valid!');
                 return;
             }
             
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            const resultElement = document.getElementById('result');
-            
-            // Konversi ke Celsius sebagai basis
             let celsius;
             switch(from) {
                 case 'C': celsius = value; break;
@@ -1334,7 +1143,6 @@
                 case 'Ra': celsius = (value - 491.67) * 5/9; break;
             }
             
-            // Konversi dari Celsius ke target
             let result;
             switch(to) {
                 case 'C': result = celsius; break;
@@ -1344,344 +1152,213 @@
                 case 'Ra': result = celsius * 9/5 + 491.67; break;
             }
             
-            resultElement.textContent = formatResult(result);
+            document.getElementById('result').textContent = result.toFixed(4);
             showNotification('Konversi berhasil!');
         }
 
-        // Fungsi konversi khusus untuk kemiringan
-        function convertSlope() {
-            const valueInput = document.getElementById('value').value;
-            let value;
-            
-            try {
-                value = parseFloat(valueInput);
-                if (isNaN(value)) {
-                    showNotification('Masukkan nilai yang valid!');
-                    return;
-                }
-            } catch (e) {
-                showNotification('Format nilai tidak valid!');
-                return;
-            }
-            
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            const resultElement = document.getElementById('result');
-            
-            // Konversi ke derajat sebagai basis
-            let degrees;
-            switch(from) {
-                case 'deg': degrees = value; break;
-                case '%': degrees = Math.atan(value/100) * 180/Math.PI; break;
-                case 'rad': degrees = value * 180/Math.PI; break;
-                case 'ratio': degrees = Math.atan(value) * 180/Math.PI; break;
-            }
-            
-            // Konversi dari derajat ke target
-            let result;
-            switch(to) {
-                case 'deg': result = degrees; break;
-                case '%': result = Math.tan(degrees * Math.PI/180) * 100; break;
-                case 'rad': result = degrees * Math.PI/180; break;
-                case 'ratio': result = Math.tan(degrees * Math.PI/180); break;
-            }
-            
-            resultElement.textContent = formatResult(result);
-            showNotification('Konversi berhasil!');
-        }
-
-        // Fungsi konversi khusus untuk sudut
         function convertAngle() {
-            const valueInput = document.getElementById('value').value;
-            let value;
+            const value = parseFloat(document.getElementById('value').value);
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
             
-            try {
-                value = parseFloat(valueInput);
-                if (isNaN(value)) {
-                    showNotification('Masukkan nilai yang valid!');
-                    return;
-                }
-            } catch (e) {
-                showNotification('Format nilai tidak valid!');
+            if (isNaN(value)) {
+                showNotification('Masukkan nilai yang valid!');
                 return;
             }
             
-            const from = document.getElementById('from').value;
-            const to = document.getElementById('to').value;
-            const resultElement = document.getElementById('result');
-            
-            // Konversi ke radian sebagai basis
             let radians;
             switch(from) {
-                case 'deg': radians = value * Math.PI/180; break;
+                case 'deg': radians = value * Math.PI / 180; break;
                 case 'rad': radians = value; break;
-                case 'grad': radians = value * Math.PI/200; break;
+                case 'grad': radians = value * Math.PI / 200; break;
                 case 'turn': radians = value * 2 * Math.PI; break;
             }
             
-            // Konversi dari radian ke target
             let result;
             switch(to) {
-                case 'deg': result = radians * 180/Math.PI; break;
+                case 'deg': result = radians * 180 / Math.PI; break;
                 case 'rad': result = radians; break;
-                case 'grad': result = radians * 200/Math.PI; break;
+                case 'grad': result = radians * 200 / Math.PI; break;
                 case 'turn': result = radians / (2 * Math.PI); break;
             }
             
-            resultElement.textContent = formatResult(result);
+            document.getElementById('result').textContent = result.toFixed(6);
             showNotification('Konversi berhasil!');
         }
 
-        // Fungsi untuk menghitung pajak/bunga
+        function convertSlope() {
+            const value = parseFloat(document.getElementById('value').value);
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            
+            if (isNaN(value)) {
+                showNotification('Masukkan nilai yang valid!');
+                return;
+            }
+            
+            let degrees;
+            switch(from) {
+                case 'deg': degrees = value; break;
+                case '%': degrees = Math.atan(value / 100) * 180 / Math.PI; break;
+                case 'rad': degrees = value * 180 / Math.PI; break;
+                case 'ratio': degrees = Math.atan(value) * 180 / Math.PI; break;
+            }
+            
+            let result;
+            switch(to) {
+                case 'deg': result = degrees; break;
+                case '%': result = Math.tan(degrees * Math.PI / 180) * 100; break;
+                case 'rad': result = degrees * Math.PI / 180; break;
+                case 'ratio': result = Math.tan(degrees * Math.PI / 180); break;
+            }
+            
+            document.getElementById('result').textContent = result.toFixed(6);
+            showNotification('Konversi berhasil!');
+        }
+        
         function calculateTaxInterest() {
             const principal = parseFloat(document.getElementById('principal').value);
             const rate = parseFloat(document.getElementById('rate').value) / 100;
             const period = document.getElementById('period').value;
             const time = parseFloat(document.getElementById('time').value);
-            const resultElement = document.getElementById('tax-result');
-            
+
             if (isNaN(principal) || isNaN(rate) || isNaN(time)) {
-                showNotification('Masukkan nilai yang valid!');
+                showNotification('Masukkan semua nilai dengan benar!');
                 return;
             }
-            
-            let result;
+
+            let n;
             switch(period) {
-                case 'daily': 
-                    result = principal * rate * time;
-                    break;
-                case 'monthly': 
-                    result = principal * rate * time;
-                    break;
-                case 'quarterly': 
-                    result = principal * rate * time;
-                    break;
-                case 'yearly': 
-                    result = principal * rate * time;
-                    break;
+                case 'daily': n = 365; break;
+                case 'monthly': n = 12; break;
+                case 'quarterly': n = 4; break;
+                case 'yearly': n = 1; break;
             }
             
-            resultElement.textContent = formatResult(result);
+            const result = principal * Math.pow((1 + rate/n), n * time);
+            document.getElementById('tax-result').textContent = `Total: ${result.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}`;
             showNotification('Perhitungan berhasil!');
         }
 
-        // Fungsi untuk menghitung skala
         function calculateScale() {
             const originalSize = parseFloat(document.getElementById('original-size').value);
             const fromScale = document.getElementById('from-scale').value;
             const toScale = document.getElementById('to-scale').value;
-            const resultElement = document.getElementById('scale-result');
-            
+
             if (isNaN(originalSize)) {
-                showNotification('Masukkan ukuran asli yang valid!');
+                showNotification('Masukkan ukuran asli!');
                 return;
             }
             
-            // Parse scale ratios
-            const fromParts = fromScale.split(':').map(Number);
-            const toParts = toScale.split(':').map(Number);
+            const fromRatio = parseFloat(fromScale.split(':')[1]);
+            const toRatio = parseFloat(toScale.split(':')[1]);
             
-            // Calculate conversion factor
-            const fromRatio = fromParts[1] / fromParts[0];
-            const toRatio = toParts[1] / toParts[0];
-            const conversionFactor = fromRatio / toRatio;
-            
-            // Calculate result
-            const result = originalSize * conversionFactor;
-            
-            resultElement.textContent = formatResult(result);
+            const result = (originalSize / fromRatio) * toRatio;
+            document.getElementById('scale-result').textContent = result.toFixed(4);
             showNotification('Konversi skala berhasil!');
         }
 
-        // Fungsi untuk konversi warna
         function convertColor() {
-            const colorInput = document.getElementById('color-input').value;
-            const resultElement = document.getElementById('color-result');
+            const hex = document.getElementById('color-input').value;
+            const r = parseInt(hex.substr(1,2), 16);
+            const g = parseInt(hex.substr(3,2), 16);
+            const b = parseInt(hex.substr(5,2), 16);
             
-            // Convert hex to RGB
-            const r = parseInt(colorInput.substr(1,2), 16);
-            const g = parseInt(colorInput.substr(3,2), 16);
-            const b = parseInt(colorInput.substr(5,2), 16);
-            
-            // Convert to HSL
-            const rNorm = r / 255;
-            const gNorm = g / 255;
-            const bNorm = b / 255;
-            
-            const max = Math.max(rNorm, gNorm, bNorm);
-            const min = Math.min(rNorm, gNorm, bNorm);
+            const result = `HEX: ${hex}\nRGB: (${r}, ${g}, ${b})\nHSL: (${rgbToHsl(r,g,b).join(', ')})`;
+            document.getElementById('color-result').textContent = result;
+            showNotification('Konversi warna berhasil!');
+        }
+        
+        function rgbToHsl(r, g, b) {
+            r /= 255; g /= 255; b /= 255;
+            const max = Math.max(r, g, b), min = Math.min(r, g, b);
             let h, s, l = (max + min) / 2;
-            
-            if (max === min) {
-                h = s = 0; // achromatic
-            } else {
+
+            if (max === min) { h = s = 0; } 
+            else {
                 const d = max - min;
                 s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-                
                 switch (max) {
-                    case rNorm: h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) / 6; break;
-                    case gNorm: h = ((bNorm - rNorm) / d + 2) / 6; break;
-                    case bNorm: h = ((rNorm - gNorm) / d + 4) / 6; break;
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
                 }
             }
-            
-            // Format result
-            const rgbString = `RGB(${r}, ${g}, ${b})`;
-            const hslString = `HSL(${Math.round(h * 360)}°, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
-            const hexString = colorInput.toUpperCase();
-            
-            resultElement.innerHTML = `
-                <div>HEX: ${hexString}</div>
-                <div>${rgbString}</div>
-                <div>${hslString}</div>
-            `;
+            return [Math.round(h * 360), Math.round(s * 100) + '%', Math.round(l * 100) + '%'];
         }
 
-        // Fungsi untuk konversi teks
         function convertText() {
-            const textInput = document.getElementById('text-input').value;
-            const conversionType = document.getElementById('text-conversion').value;
-            const resultElement = document.getElementById('text-result');
+            const text = document.getElementById('text-input').value;
+            const conversion = document.getElementById('text-conversion').value;
+            let result = '';
             
-            if (!textInput) {
-                showNotification('Masukkan teks terlebih dahulu!');
-                return;
+            switch(conversion) {
+                case 'uppercase': result = text.toUpperCase(); break;
+                case 'lowercase': result = text.toLowerCase(); break;
+                case 'capitalize': result = text.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()); break;
+                case 'reverse': result = text.split('').reverse().join(''); break;
+                case 'binary': result = text.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' '); break;
+                case 'base64': result = btoa(text); break;
             }
             
-            let result;
-            switch(conversionType) {
-                case 'uppercase':
-                    result = textInput.toUpperCase();
-                    break;
-                case 'lowercase':
-                    result = textInput.toLowerCase();
-                    break;
-                case 'capitalize':
-                    result = textInput.replace(/\b\w/g, char => char.toUpperCase());
-                    break;
-                case 'reverse':
-                    result = textInput.split('').reverse().join('');
-                    break;
-                case 'binary':
-                    result = textInput.split('').map(char => 
-                        char.charCodeAt(0).toString(2).padStart(8, '0')
-                    ).join(' ');
-                    break;
-                case 'base64':
-                    result = btoa(textInput);
-                    break;
-            }
-            
-            resultElement.textContent = result;
+            document.getElementById('text-result').textContent = result;
             showNotification('Konversi teks berhasil!');
         }
 
-        // Fungsi untuk memutar suara
         function playSound() {
-            const frequency = parseInt(document.getElementById('sound-frequency').value);
-            const soundType = document.getElementById('sound-type').value;
-            const soundPlayer = document.querySelector('.sound-player');
+            const btn = document.getElementById('sound-play-btn');
+            if (oscillator) {
+                oscillator.stop();
+                oscillator = null;
+                btn.textContent = 'Putar Suara';
+                btn.classList.remove('stop');
+                return;
+            }
+
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
             
-            // Create audio context
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            oscillator = audioContext.createOscillator();
+            gainNode = audioContext.createGain();
             
-            // Create oscillator
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
+            oscillator.type = document.getElementById('sound-type').value;
+            oscillator.frequency.setValueAtTime(document.getElementById('sound-frequency').value, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
             
-            // Set oscillator type
-            oscillator.type = soundType;
-            oscillator.frequency.value = frequency;
-            
-            // Connect nodes
             oscillator.connect(gainNode);
             gainNode.connect(audioContext.destination);
             
-            // Set gain (volume)
-            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
-            
-            // Start and stop oscillator
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 1);
-            
-            // Update player UI
-            soundPlayer.innerHTML = `
-                <div class="loading">
-                    <i class="fas fa-volume-up" style="font-size: 24px;"></i>
-                    <p>Memutar suara ${frequency} Hz...</p>
-                </div>
-            `;
-            
-            // Reset player UI after sound finishes
-            setTimeout(() => {
-                soundPlayer.innerHTML = '<p style="text-align:center; color: #a0a0a0;">Gunakan tombol untuk memutar suara</p>';
-            }, 1200);
-            
+            oscillator.start();
+            btn.textContent = 'Hentikan Suara';
+            btn.classList.add('stop');
             showNotification('Memutar suara...');
         }
-
-        // Fungsi untuk konversi koordinat
-        function convertCoordinate() {
-            const latitude = parseFloat(document.getElementById('latitude').value);
-            const longitude = parseFloat(document.getElementById('longitude').value);
-            const format = document.getElementById('coord-format').value;
-            const resultElement = document.getElementById('coord-result');
-            
-            if (isNaN(latitude) || isNaN(longitude)) {
+        
+        document.getElementById('coord-convert')?.addEventListener('click', () => {
+            const lat = parseFloat(document.getElementById('latitude').value);
+            const lon = parseFloat(document.getElementById('longitude').value);
+            if (isNaN(lat) || isNaN(lon)) {
                 showNotification('Masukkan koordinat yang valid!');
                 return;
             }
             
-            let result;
-            switch(format) {
-                case 'decimal':
-                    result = `Decimal: ${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
-                    break;
-                case 'dms':
-                    // Convert to DMS format
-                    const latDeg = Math.floor(Math.abs(latitude));
-                    const latMin = Math.floor((Math.abs(latitude) - latDeg) * 60);
-                    const latSec = ((Math.abs(latitude) - latDeg) * 60 - latMin) * 60;
-                    const latDir = latitude >= 0 ? 'N' : 'S';
-                    
-                    const lonDeg = Math.floor(Math.abs(longitude));
-                    const lonMin = Math.floor((Math.abs(longitude) - lonDeg) * 60);
-                    const lonSec = ((Math.abs(longitude) - lonDeg) * 60 - lonMin) * 60;
-                    const lonDir = longitude >= 0 ? 'E' : 'W';
-                    
-                    result = `DMS: ${latDeg}°${latMin}'${latSec.toFixed(2)}"${latDir}, ${lonDeg}°${lonMin}'${lonSec.toFixed(2)}"${lonDir}`;
-                    break;
-                case 'utm':
-                    result = 'Konversi UTM memerlukan library khusus yang tidak tersedia dalam aplikasi ini.';
-                    break;
-            }
-            
-            resultElement.textContent = result;
-            
-            // Update map preview (simplified)
-            const coordMap = document.getElementById('coord-map');
-            coordMap.innerHTML = `
-                <div style="text-align: center;">
-                    <i class="fas fa-map-marker-alt" style="font-size: 48px; color: #4facfe;"></i>
-                    <p style="margin-top: 10px;">${latitude.toFixed(4)}, ${longitude.toFixed(4)}</p>
-                </div>
-            `;
-            
-            showNotification('Konversi koordinat berhasil!');
-        }
+            const toDMS = (coord) => {
+                const absolute = Math.abs(coord);
+                const degrees = Math.floor(absolute);
+                const minutesNotTruncated = (absolute - degrees) * 60;
+                const minutes = Math.floor(minutesNotTruncated);
+                const seconds = ((minutesNotTruncated - minutes) * 60).toFixed(2);
+                return `${degrees}°${minutes}'${seconds}"`;
+            };
 
-        // Fungsi helper untuk memformat hasil
-        function formatResult(value) {
-            // Handle very large or very small numbers
-            if (Math.abs(value) >= 1e6 || (Math.abs(value) < 1e-3 && value !== 0)) {
-                return value.toExponential(6);
-            }
+            const latDMS = toDMS(lat) + (lat >= 0 ? " N" : " S");
+            const lonDMS = toDMS(lon) + (lon >= 0 ? " E" : " W");
             
-            // Handle regular numbers
-            const rounded = Math.round(value * 1000000) / 1000000;
-            return rounded.toLocaleString('id-ID');
-        }
+            document.getElementById('coord-result').textContent = `Desimal: ${lat}, ${lon}\nDMS: ${latDMS}, ${lonDMS}`;
+            showNotification('Konversi koordinat berhasil!');
+        });
+
     </script>
 </body>
 </html>
